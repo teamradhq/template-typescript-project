@@ -1,1 +1,30 @@
 #!/usr/bin/env bash
+
+# Redirect output to stderr.
+exec 1>&2
+
+if yarn lint --fix --max-warnings=0
+then
+	echo "Pass: eslint"
+else
+	echo "Error: Cannot commit with linter warnings or errors."
+	exit 1
+fi
+
+if npm run test
+then
+	echo "Pass: tests"
+else
+	echo "Error: Cannot commit with failing tests."
+	exit 2
+fi
+
+if npm run build
+then
+	echo "Pass: build"
+else
+	echo "Error: Cannot commit with failing js build."
+	exit 3
+fi
+
+exit 0
