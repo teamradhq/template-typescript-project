@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "allowSyntheticDefaultImports": false,
+    "baseUrl": "./",
+    "moduleResolution": "node",
+    "paths": {
+      "@/*": ["ts/src/*"],
+      "#/*": ["tests/*"],
+    }
+  },
+  "exclude": ["node_modules", "dist"]
+}

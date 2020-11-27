@@ -1,0 +1,23 @@
+{
+  "extends": "@tsconfig/node12/tsconfig.json",
+  "include": [
+    "ts/src/index.ts",
+  ],
+  "exclude" : [
+    "test/**/*",
+  ],
+  "compilerOptions": {
+    "rootDir": "./",
+    "outDir": "./js/src",
+    "removeComments": false,
+    "preserveConstEnums": true,
+    "sourceMap": true,
+    "types": ["node", "jest"],
+    "lib": ["ES2020"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["ts/src/*"],
+      "#/*": ["test/*"]
+    }
+  }
+}
