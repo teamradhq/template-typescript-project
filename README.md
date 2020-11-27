@@ -28,7 +28,7 @@ Jest unit tests.
 
 Output TS to `js` folder.
 
-### `exec`
+### `go`
 
 Run `babel-node` on JS files.
 

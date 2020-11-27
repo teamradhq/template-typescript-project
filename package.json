@@ -4,11 +4,10 @@
     "main": "js/index.js",
     "license": "MIT",
     "scripts": {
-        "build": "tsc --project ./tsconfig.json",
-        "exec": "babel-node ./js/index.js --config-file ./babel.config.js",
-        "develop": "npm run build && npm run exec",
+        "build": "webpack --config webpack.config.js",
+        "go": "babel-node ./js/index.js --config-file ./babel.config.js",
+        "develop": "npm run build && npm run go",
         "develop:watch": "nodemon --exec npm run develop --watch ts",
-        "go": "npm run build && npm run exec",
         "lint": "eslint ./ts/src/**/*.ts --fix --config ./eslint.config.js",
         "lint:watch": "nodemon --exec yarn lint",
         "test": "jest --config ./jest.config.js",
@@ -29,6 +28,9 @@
         "jest": ">=26.0.0 <27.0.0-0",
         "nodemon": "^1.19.1",
         "ts-jest": "^26.4.4",
-        "typescript": "^4.0.5"
+        "ts-loader": "^8.0.11",
+        "typescript": "^4.0.5",
+        "webpack": "^5.8.0",
+        "webpack-cli": "^4.2.0"
     }
 }
