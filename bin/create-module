@@ -1,0 +1,129 @@
+#!/usr/bin/env node
+/**
+ * This script will create a new module and a corresponding test that fails.
+ *
+ * @example
+ *
+ *       create-module 'lib.someFunction'
+ *       # ts/src/lib/someFunction.ts
+ *       # test/lib/someFunction.test.ts
+ *
+ */
+
+const fs = require('fs');
+const path = require('path');
+
+// Show help and exit if no arguments passed...
+const args = process.argv.slice(2);
+if (args.length === 0) {
+  console.log('Show help!');
+  process.exit(1);
+}
+
+// Make options...
+const options = {};
+while (args.length) {
+  const next = args.shift();
+  if (!next.startsWith('--')) {
+    continue;
+  }
+
+  options[next.replace('--', '')] = args.shift();
+}
+
+// Check required arguments...
+if (!Object.keys(options).includes('name')) {
+  console.log(`Error: you must pass a --name option.`);
+  process.exit(2);
+}
+
+// Check all options are valid...
+Object.entries(options).forEach(([key, value]) => {
+  if (!value) {
+    console.log(`Error: you must pass a value for --${key}.`);
+    process.exit(3);
+  }
+});
+
+// Extract module name and path to options.
+const [moduleName, ...dirs] = options.name.split('.').reverse();
+options.moduleName = moduleName;
+options.modulePath = dirs.reverse().join('/');
+
+// Define working dirs...
+const PROJECT_ROOT = path.resolve(__dirname, '../');
+const SRC_ROOT = path.resolve(PROJECT_ROOT, 'ts/src');
+const TEST_ROOT = path.resolve(PROJECT_ROOT, 'test');
+
+// module file exists
+const moduleFile = path.resolve(
+  SRC_ROOT,
+  options.modulePath,
+  `${options.moduleName}.ts`,
+);
+if (fs.existsSync(moduleFile)) {
+  console.log('Error: Module file exists');
+  process.exit(4);
+}
+
+// test file exists
+const testFile = path.resolve(
+  TEST_ROOT,
+  options.modulePath,
+  `${options.moduleName}.test.ts`
+);
+if (fs.existsSync(testFile)) {
+  console.log('Error: Test file exists');
+  process.exit(5);
+}
+
+const parseTemplate = (template, options) => (
+  template
+    .replace(/{{ ModuleName }}/g, options.moduleName)
+    .replace(/{{ ModulePath }}/g, options.modulePath)
+);
+
+const srcDirectory = path.resolve(SRC_ROOT, options.modulePath);
+// src does not directory exist
+if (!fs.existsSync(srcDirectory)) {
+  console.log('Create test dir...');
+  fs.mkdirSync(srcDirectory, { recursive: true });
+}
+
+// Parse module template to be name
+const moduleTemplate = `
+const {{ ModuleName }} = {};
+
+export default {{ ModuleName }};
+`
+console.log(moduleFile);
+console.log(parseTemplate(moduleTemplate, options));
+fs.writeFileSync(moduleFile, parseTemplate(moduleTemplate, options), 'utf-8');
+// Write to module file
+
+// Parse test template to be name
+const testTemplate = `
+import {{ ModuleName }} from '@/{{ ModulePath }}/{{ ModuleName }}';
+describe({{ ModuleName }}, () => {
+  it('should fail this test', () => {
+    expect(true).toBe(false);
+  });
+});
+`
+
+const testDirectory = path.resolve(TEST_ROOT, options.modulePath);
+// test does not directory exist
+if (!fs.existsSync(testDirectory)) {
+  console.log('Create test dir...');
+  fs.mkdirSync(testDirectory, { recursive: true });
+}
+
+// Write to test file
+console.log(parseTemplate(testTemplate, options));
+fs.writeFileSync(testFile, parseTemplate(testTemplate, options), 'utf-8');
+
+console.log('Building module...');
+
+
+console.log(args);
+console.log(options);
